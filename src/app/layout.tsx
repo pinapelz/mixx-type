@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import StyledComponentsRegistry from "./registry";
+import { AuthProvider } from "./context/auth";
 
 export const metadata: Metadata = {
-  title: "LRC-Type",
+  title: "TypingMIXX",
   description:
     "A typing game powered by LRC lyrics. Type along to your favourite songs!",
 };
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+        <StyledComponentsRegistry>
+          <AuthProvider>{children}</AuthProvider>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );

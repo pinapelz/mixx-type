@@ -1,25 +1,40 @@
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import Link from "next/link";
+import {
+  Root as BaseRoot,
+  Navbar as BaseNavbar,
+  Logo as BaseLogo,
+  LogoIcon as BaseLogoIcon,
+  NavLink as BaseNavLink,
+  NavCtaLink as BaseNavCtaLink,
+} from "./styles/shared";
 
-export const NavLeft = styled.div`
+// ── Base components (previously in the old app/page.styles.ts) ───────────────
+
+const BaseNavLeft = styled.div`
   display: flex;
   align-items: center;
   gap: 14px;
 `;
 
-export const NavCenter = styled.div`
+const BaseNavCenter = styled.div`
   display: flex;
   align-items: center;
   flex: 0 1 560px;
 `;
 
-export const SearchBox = styled.div`
+const BaseNavRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+const BaseSearchBox = styled.div`
   display: flex;
   align-items: center;
   flex: 1;
   height: 38px;
   border: 1px solid #d4d4d4;
-  border-radius: 10px;
   overflow: hidden;
   background-color: #f0f0f0;
   transition: border-color 0.2s;
@@ -28,7 +43,7 @@ export const SearchBox = styled.div`
   }
 `;
 
-export const SearchInput = styled.input`
+const BaseSearchInput = styled.input`
   flex: 1;
   height: 100%;
   padding: 0 14px;
@@ -42,7 +57,7 @@ export const SearchInput = styled.input`
   }
 `;
 
-export const SearchButton = styled.button`
+const BaseSearchButton = styled.button`
   width: 52px;
   height: 100%;
   background-color: #e8e8e8;
@@ -60,15 +75,7 @@ export const SearchButton = styled.button`
   }
 `;
 
-export const NavRight = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-`;
-
-
-
-export const ChipsBar = styled.div`
+const BaseChipsBar = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
@@ -80,10 +87,9 @@ export const ChipsBar = styled.div`
   }
 `;
 
-export const Chip = styled.button<{ $active?: boolean }>`
+const BaseChip = styled.button<{ $active?: boolean }>`
   white-space: nowrap;
   padding: 7px 16px;
-  border-radius: 10px;
   border: 1px solid ${(p) => (p.$active ? "transparent" : "#d4d4d4")};
   font-size: 13px;
   font-weight: 500;
@@ -107,9 +113,8 @@ export const CardGrid = styled.div`
   gap: 20px;
 `;
 
-export const Card = styled(Link)`
+const BaseCard = styled(Link)`
   cursor: pointer;
-  border-radius: 14px;
   text-decoration: none;
   color: inherit;
   display: block;
@@ -120,11 +125,10 @@ export const Card = styled(Link)`
   }
 `;
 
-export const ThumbnailWrapper = styled.div`
+const BaseThumbnailWrapper = styled.div`
   width: 100%;
   aspect-ratio: 16 / 9;
   background-color: #e4e4e4;
-  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -147,9 +151,8 @@ export const PlayOverlay = styled.div`
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0);
-  border-radius: 12px;
   transition: background 0.2s;
-  ${Card}:hover & {
+  ${BaseCard}:hover & {
     background: rgba(0, 0, 0, 0.25);
   }
 `;
@@ -157,7 +160,6 @@ export const PlayOverlay = styled.div`
 export const PlayCircle = styled.div`
   width: 48px;
   height: 48px;
-  border-radius: 50%;
   background: rgba(0, 0, 0, 0.7);
   color: #fff;
   display: flex;
@@ -167,7 +169,7 @@ export const PlayCircle = styled.div`
   opacity: 0;
   transform: scale(0.8);
   transition: opacity 0.2s, transform 0.2s;
-  ${Card}:hover & {
+  ${BaseCard}:hover & {
     opacity: 1;
     transform: scale(1);
   }
@@ -187,7 +189,7 @@ export const CardInfo = styled.div`
   min-width: 0;
 `;
 
-export const CardTitle = styled.span`
+const BaseCardTitle = styled.span`
   font-size: 14px;
   font-weight: 600;
   color: #1a1a1a;
@@ -198,13 +200,13 @@ export const CardTitle = styled.span`
   overflow: hidden;
 `;
 
-export const CardSub = styled.span`
+const BaseCardSub = styled.span`
   font-size: 12px;
   color: #909090;
   line-height: 1.3;
 `;
 
-export const EmptyState = styled.div`
+const BaseEmptyState = styled.div`
   grid-column: 1 / -1;
   padding: 48px 0;
   text-align: center;
@@ -212,40 +214,119 @@ export const EmptyState = styled.div`
   color: #909090;
 `;
 
-export const CtaSection = styled.div`
-  padding: 32px 24px;
-  border-top: 1px solid #e5e5e5;
-  margin-top: 8px;
-`;
+// ── Dark-themed exports ───────────────────────────────────────────────────────
 
-export const SectionHeading = styled.h2`
-  font-size: 17px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 14px;
-`;
+export { GridContainer as BaseGridContainer };
 
-export const OpenPlayerLink = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 22px;
-  border-radius: 10px;
-  background-color: #1a1a1a;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background-color 0.15s;
-  &:hover {
-    background-color: #333;
+export const TypingGlobalStyle = createGlobalStyle`
+  html,
+  body {
+    background-color: #0b0b10;
   }
 `;
 
-export const PlayerDescription = styled.p`
-  font-size: 13px;
-  color: #909090;
-  margin: 14px 0 0;
-  line-height: 1.6;
-  max-width: 480px;
+export const Root = styled(BaseRoot)`
+  background-color: #0b0b10;
+  color: #f5f5f5;
+`;
+
+export const Navbar = styled(BaseNavbar)`
+  background-color: rgba(11, 11, 16, 0.9);
+  border-bottom: 1px solid #1f1f2a;
+`;
+
+export const Logo = styled(BaseLogo)`
+  color: #f5f5f5;
+`;
+
+export const LogoIcon = styled(BaseLogoIcon)`
+  background-color: #f5f5f5;
+  color: #0b0b10;
+`;
+
+export const NavLink = styled(BaseNavLink)`
+  color: #b0b3bd;
+  &:hover {
+    background-color: #1a1d29;
+    color: #fff;
+  }
+`;
+
+export const NavCtaLink = styled(BaseNavCtaLink)`
+  background-color: #1a1d29;
+  border-color: #2a2f3d;
+  color: #fff;
+  &:hover {
+    background-color: #222838;
+    border-color: #3a4154;
+  }
+`;
+
+export const NavLeft = styled(BaseNavLeft)``;
+export const NavCenter = styled(BaseNavCenter)``;
+export const NavRight = styled(BaseNavRight)``;
+
+export const SearchBox = styled(BaseSearchBox)`
+  border-color: #2a2f3d;
+  background-color: #141824;
+  &:focus-within {
+    border-color: #4b5563;
+  }
+`;
+
+export const SearchInput = styled(BaseSearchInput)`
+  color: #f5f5f5;
+  &::placeholder {
+    color: #8b90a0;
+  }
+`;
+
+export const SearchButton = styled(BaseSearchButton)`
+  background-color: #1a1d29;
+  border-left-color: #2a2f3d;
+  color: #c0c4d0;
+  &:hover {
+    background-color: #222838;
+    color: #fff;
+  }
+`;
+
+export const ChipsBar = styled(BaseChipsBar)`
+  background-color: #0f111a;
+`;
+
+export const Chip = styled(BaseChip)`
+  border-color: #2a2f3d;
+  color: #b8bcc7;
+  background-color: transparent;
+  &:hover {
+    background-color: #1a1d29;
+    color: #fff;
+  }
+`;
+
+export const Card = styled(BaseCard)`
+  border: 1px solid #1f1f2a;
+  background-color: #0f111a;
+  &:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    border-color: #2a2f3d;
+  }
+`;
+
+export const ThumbnailWrapper = styled(BaseThumbnailWrapper)`
+  background-color: #1a1d29;
+  color: #4b5563;
+`;
+
+export const CardTitle = styled(BaseCardTitle)`
+  color: #f5f5f5;
+`;
+
+export const CardSub = styled(BaseCardSub)`
+  color: #9aa0ad;
+`;
+
+export const EmptyState = styled(BaseEmptyState)`
+  color: #9aa0ad;
 `;

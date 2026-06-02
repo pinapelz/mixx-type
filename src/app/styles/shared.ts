@@ -40,7 +40,6 @@ export const LogoIcon = styled.span`
   justify-content: center;
   background-color: #1a1a1a;
   color: #fff;
-  border-radius: 6px;
   width: 30px;
   height: 22px;
   font-size: 10px;
@@ -52,7 +51,6 @@ export const NavLink = styled(Link)`
   color: #606060;
   text-decoration: none;
   padding: 6px 10px;
-  border-radius: 8px;
   transition: background-color 0.15s, color 0.15s;
   &:hover {
     background-color: #f0f0f0;
@@ -66,7 +64,6 @@ export const NavCtaLink = styled(Link)`
   color: #1a1a1a;
   text-decoration: none;
   padding: 6px 12px;
-  border-radius: 999px;
   background-color: #f5f5f5;
   border: 1px solid #e5e5e5;
   transition: background-color 0.15s, border-color 0.15s, color 0.15s;

@@ -9,7 +9,8 @@ import {
   useState,
   Suspense,
 } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import pb from "../../lib/pocketbase";
 import Link from "next/link";
 import { FaRedo } from "react-icons/fa";
 import { MdLibraryMusic } from "react-icons/md";
@@ -60,10 +61,6 @@ import {
   SongTitleText,
   SongArtistText,
   StartBtn,
-  CodeSection,
-  CodeInputRow,
-  CodeInputField,
-  CodeLoadBtn,
   ResultsOverlay,
   ResultsCard,
   ResultsTitle,
@@ -92,7 +89,8 @@ const BACKGROUND_OPACITY_KEY = "lrcType.backgroundOpacity";
 const AUDIO_VOLUME_KEY = "lrcType.audioVolume";
 
 function GameInner() {
-  const searchParams = useSearchParams();
+  const params = useParams<{ slug: string }>();
+  const slug = params?.slug ?? "";
   const router = useRouter();
 
   useEffect(() => {
@@ -121,32 +119,30 @@ function GameInner() {
   const [offset, setOffset] = useState(0);
   const [loadingLrc, setLoadingLrc] = useState(false);
 
-  const [codeInput, setCodeInput] = useState("");
   const [wrongChar, setWrongChar] = useState(false);
   const [clearShowing, setClearShowing] = useState(false);
   const [comboAnimKey, setComboAnimKey] = useState(0);
   const [countdown, setCountdown] = useState(0);
-  const [backgroundOpacity, setBackgroundOpacity] = useState(() => {
-    if (typeof window === "undefined") return 0;
-    const stored = localStorage.getItem(BACKGROUND_OPACITY_KEY);
-    if (stored === null) return 0;
-    const parsed = Number(stored);
-    if (!Number.isFinite(parsed)) return 0;
-    return Math.min(100, Math.max(0, parsed));
-  });
-  const [audioVolume, setAudioVolume] = useState(() => {
-    if (typeof window === "undefined") return 100;
-    const stored = localStorage.getItem(AUDIO_VOLUME_KEY);
-    if (stored === null) return 100;
-    const parsed = Number(stored);
-    if (!Number.isFinite(parsed)) return 100;
-    return Math.min(100, Math.max(0, parsed));
-  });
+  const [backgroundOpacity, setBackgroundOpacity] = useState(0);
+  const [audioVolume, setAudioVolume] = useState(100);
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
   const [skipBacking, setSkipBacking] = useState(false);
   const isVideo = useMemo(() => isVideoUrl(audioUrl), [audioUrl]);
 
-
+  useEffect(() => {
+    const storedOpacity = localStorage.getItem(BACKGROUND_OPACITY_KEY);
+    if (storedOpacity !== null) {
+      const parsed = Number(storedOpacity);
+      if (Number.isFinite(parsed))
+        setBackgroundOpacity(Math.min(100, Math.max(0, parsed)));
+    }
+    const storedVolume = localStorage.getItem(AUDIO_VOLUME_KEY);
+    if (storedVolume !== null) {
+      const parsed = Number(storedVolume);
+      if (Number.isFinite(parsed))
+        setAudioVolume(Math.min(100, Math.max(0, parsed)));
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(BACKGROUND_OPACITY_KEY, String(backgroundOpacity));
@@ -194,7 +190,7 @@ function GameInner() {
 
   const gameLines = useMemo(
     () => parseLrcLines(lrcContent, { skipBacking }),
-    [lrcContent, skipBacking]
+    [lrcContent, skipBacking],
   );
   const isReady = !loadingLrc && !!lrcContent && !!audioUrl;
 
@@ -213,7 +209,9 @@ function GameInner() {
 
   const gRef = useRef(g);
   const currentLineContent =
-    g.displayedLineIdx >= 0 ? gameLines[g.displayedLineIdx]?.content ?? "" : "";
+    g.displayedLineIdx >= 0
+      ? (gameLines[g.displayedLineIdx]?.content ?? "")
+      : "";
 
   useEffect(() => {
     charRefs.current = [];
@@ -317,7 +315,10 @@ function GameInner() {
     }
 
     const mediaCurrentMs = currentMs - offsetRef.current;
-    const pct = Math.min(100, Math.max(0, (mediaCurrentMs / firstMediaMs) * 100));
+    const pct = Math.min(
+      100,
+      Math.max(0, (mediaCurrentMs / firstMediaMs) * 100),
+    );
 
     return { pct, remainingMs };
   }, [gameLines, currentMs, offset]);
@@ -423,7 +424,7 @@ function GameInner() {
           setLoadingLrc(false);
         });
     }
-    if (typeof data.file1 === "string") setAudioUrl(data.file1);
+    if (typeof data.media === "string") setAudioUrl(data.media);
     if (typeof data.offset === "number") setOffset(data.offset);
     if (typeof data.offset === "string" && data.offset.trim() !== "")
       setOffset(Number(data.offset));
@@ -436,13 +437,25 @@ function GameInner() {
   }, []);
 
   useEffect(() => {
-    const code = searchParams.get("code");
-    if (!code) return;
-    try {
-      const json = atob(code);
-      const data = JSON.parse(json) as Record<string, unknown>;
-      loadData(data);
-    } catch {}
+    if (!slug) return;
+    pb.collection("charts")
+      .getOne(slug)
+      .then((record) => {
+        loadData({
+          media: (record as Record<string, unknown>).media,
+          lrc: (record as Record<string, unknown>).lrc,
+          offset: (record as Record<string, unknown>).offset,
+          title: (record as Record<string, unknown>).title,
+          artist: (record as Record<string, unknown>).artist,
+        });
+      })
+      .catch(() => {
+        try {
+          const json = atob(slug);
+          const data = JSON.parse(json) as Record<string, unknown>;
+          loadData(data);
+        } catch {}
+      });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlePreviewToggle = useCallback(() => {
@@ -452,9 +465,12 @@ function GameInner() {
 
     if (media.paused) {
       void media.play().catch(() => {
-        toast.error("Unable to start preview. Try interacting with the page again.", {
-          theme: "dark",
-        });
+        toast.error(
+          "Unable to start preview. Try interacting with the page again.",
+          {
+            theme: "dark",
+          },
+        );
       });
       return;
     }
@@ -521,21 +537,6 @@ function GameInner() {
     setProgressPct(0);
   }, [isVideo]);
 
-  const handleLoadCode = useCallback(() => {
-    if (!codeInput.trim()) return;
-    try {
-      const json = atob(codeInput.trim());
-      const data = JSON.parse(json) as Record<string, unknown>;
-      loadData(data);
-      handleRestart();
-      toast.success("Song loaded!", { theme: "dark" });
-    } catch {
-      toast.error("Invalid code. Please check and try again.", {
-        theme: "dark",
-      });
-    }
-  }, [codeInput, loadData, handleRestart]);
-
   const handleKeyPress = useCallback(
     (char: string) => {
       if (phaseRef.current !== "playing") return;
@@ -575,7 +576,10 @@ function GameInner() {
             if (intermissionRemaining > 5000) {
               e.preventDefault();
               const targetMs = firstMs - 3000;
-              media.currentTime = Math.max(0, (targetMs - offsetRef.current) / 1000);
+              media.currentTime = Math.max(
+                0,
+                (targetMs - offsetRef.current) / 1000,
+              );
               setCurrentMs(media.currentTime * 1000 + offsetRef.current);
               return;
             }
@@ -621,18 +625,17 @@ function GameInner() {
             }}
           >
             <MdLibraryMusic style={{ fontSize: 20, color: "#a78bfa" }} />
-            LRC-Type
+            TypingMIXX
           </Link>
-
           <Link
-            href="/create"
+            href="/"
             style={{
               fontSize: 13,
               color: "rgba(255,255,255,0.6)",
               textDecoration: "none",
             }}
           >
-            Create
+            Home
           </Link>
         </div>
       </GameNavbar>
@@ -643,8 +646,10 @@ function GameInner() {
             <StartCard>
               {!isReady ? (
                 <>
-                  <SongTitleText>LRC-Type</SongTitleText>
-                  <SongArtistText>Enter a game code to begin!</SongArtistText>
+                  <SongTitleText>Loading...</SongTitleText>
+                  <SongArtistText>
+                    Please wait while we load the chart
+                  </SongArtistText>
                 </>
               ) : (
                 <>
@@ -677,21 +682,6 @@ function GameInner() {
                 />
               </OpacityControl>
 
-              <PreviewWrap>
-                <PreviewBtn
-                  onClick={handlePreviewToggle}
-                  disabled={!audioUrl}
-                  suppressHydrationWarning
-                >
-                  {isPreviewPlaying ? "⏸ Pause Preview" : "▶ Preview Audio"}
-                </PreviewBtn>
-                <PreviewHint>
-                  {audioUrl
-                    ? "Use preview to test your volume before starting."
-                    : "Load a chart to enable audio preview."}
-                </PreviewHint>
-              </PreviewWrap>
-
               {isVideo && (
                 <OpacityControl>
                   <OpacityLabel>
@@ -709,27 +699,20 @@ function GameInner() {
                   />
                 </OpacityControl>
               )}
-              <CodeSection>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: "rgba(255,255,255,0.3)",
-                    letterSpacing: 1,
-                    textTransform: "uppercase",
-                  }}
+              <PreviewWrap>
+                <PreviewBtn
+                  onClick={handlePreviewToggle}
+                  disabled={!audioUrl}
+                  suppressHydrationWarning
                 >
-                  Load a chart
-                </div>
-                <CodeInputRow>
-                  <CodeInputField
-                    placeholder="Enter a LRC-Type code..."
-                    value={codeInput}
-                    onChange={(e) => setCodeInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleLoadCode()}
-                  />
-                  <CodeLoadBtn onClick={handleLoadCode}>Load</CodeLoadBtn>
-                </CodeInputRow>
-              </CodeSection>
+                  {isPreviewPlaying ? "⏸ Pause Preview" : "▶ Preview Audio"}
+                </PreviewBtn>
+                <PreviewHint>
+                  {audioUrl
+                    ? "Use preview to test your volume before starting."
+                    : "Load a chart to enable audio preview."}
+                </PreviewHint>
+              </PreviewWrap>
             </StartCard>
           </StartOverlay>
         )}
@@ -812,7 +795,7 @@ function GameInner() {
                   <UpcomingText>
                     {gameLines[0] && gameLines[0].content.trim() === ""
                       ? "[INTERMISSION]"
-                      : gameLines[0]?.content ?? ""}
+                      : (gameLines[0]?.content ?? "")}
                   </UpcomingText>
                 </UpcomingWrap>
                 <CurrentWrap style={{ position: "relative" }}>
@@ -820,7 +803,11 @@ function GameInner() {
                     <LineTimingMeta>
                       Time to first line:{" "}
                       <LineTimingValue>
-                        {Math.max(0, intermissionData.remainingMs / 1000).toFixed(1)}s
+                        {Math.max(
+                          0,
+                          intermissionData.remainingMs / 1000,
+                        ).toFixed(1)}
+                        s
                       </LineTimingValue>
                     </LineTimingMeta>
                   </LineTimingRow>
@@ -832,7 +819,8 @@ function GameInner() {
                       textAlign: "center",
                     }}
                   >
-                    {intermissionData.remainingMs > 5000 && "Press Space to skip long intermissions"}
+                    {intermissionData.remainingMs > 5000 &&
+                      "Press Space to skip long intermissions"}
                   </div>
                   <LineTimingBar>
                     <LineTimingFill $pct={intermissionData.pct} />
@@ -850,7 +838,7 @@ function GameInner() {
                   {gameLines[g.displayedLineIdx + 1] &&
                   gameLines[g.displayedLineIdx + 1].content.trim() === ""
                     ? "[INTERMISSION]"
-                    : gameLines[g.displayedLineIdx + 1]?.content ?? ""}
+                    : (gameLines[g.displayedLineIdx + 1]?.content ?? "")}
                 </UpcomingText>
               </UpcomingWrap>
               <CurrentWrap style={{ position: "relative" }}>
@@ -867,7 +855,7 @@ function GameInner() {
                       <LineTimingValue>
                         {calculateCPSNeeded(
                           gameLines[g.displayedLineIdx].content,
-                          currentLineTime / 1000
+                          currentLineTime / 1000,
                         ).toFixed(1)}
                       </LineTimingValue>
                     </LineTimingMeta>

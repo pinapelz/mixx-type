@@ -221,7 +221,6 @@ export const LineTimingBar = styled.div`
   width: 100%;
   height: 3px;
   background: rgba(255, 255, 255, 0.12);
-  border-radius: 2px;
   overflow: hidden;
 `;
 
@@ -232,7 +231,6 @@ export const LineTimingFill = styled.div.attrs<{ $pct: number }>((props) => ({
 }))<{ $pct: number }>`
   height: 100%;
   width: 100%;
-  border-radius: 2px;
   background: #7c3aed;
   transform-origin: left;
   will-change: transform;
@@ -262,7 +260,6 @@ export const CharBox = styled.span<{
   font-weight: 700;
   font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   padding: 0 3px;
-  border-radius: 4px;
   transition: all 0.08s ease;
 
   ${({ $state }) => {
@@ -333,7 +330,6 @@ export const GameFooter = styled.footer`
 export const ControlBtn = styled.button`
   width: 40px;
   height: 40px;
-  border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.20);
   background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
@@ -354,7 +350,6 @@ export const ProgressWrap = styled.div`
   flex: 1;
   height: 6px;
   background: rgba(255, 255, 255, 0.12);
-  border-radius: 3px;
   overflow: hidden;
   cursor: pointer;
 `;
@@ -366,7 +361,6 @@ export const ProgressFill = styled.div.attrs<{ $pct: number }>((props) => ({
 }))<{ $pct: number }>`
   height: 100%;
   background: #7c3aed;
-  border-radius: 3px;
   transition: width 0.3s linear;
 `;
 
@@ -437,7 +431,6 @@ export const PreviewWrap = styled.div`
 export const PreviewBtn = styled.button`
   width: 100%;
   padding: 10px 16px;
-  border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
@@ -486,7 +479,6 @@ export const SongArtistText = styled.p`
 
 export const StartBtn = styled.button`
   padding: 14px 40px;
-  border-radius: 12px;
   background: #7c3aed;
   color: #ffffff;
   font-size: 18px;
@@ -521,7 +513,6 @@ export const CodeInputRow = styled.div`
 export const CodeInputField = styled.input`
   flex: 1;
   padding: 8px 12px;
-  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.06);
   color: #ffffff;
@@ -540,7 +531,6 @@ export const CodeInputField = styled.input`
 
 export const CodeLoadBtn = styled.button`
   padding: 8px 16px;
-  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
@@ -604,7 +594,6 @@ export const StatsGrid = styled.div`
 export const StatBlock = styled.div`
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -631,7 +620,6 @@ export const ActionRow = styled.div`
 
 export const PlayAgainBtn = styled.button`
   padding: 10px 28px;
-  border-radius: 12px;
   background: #7c3aed;
   color: #ffffff;
   font-size: 15px;
@@ -648,7 +636,6 @@ export const PlayAgainBtn = styled.button`
 
 export const HomeBtn = styled.button`
   padding: 10px 28px;
-  border-radius: 12px;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.20);
   color: #ffffff;
