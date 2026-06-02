@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { FaPlay, FaMusic, FaSearch } from "react-icons/fa";
 import { MdLibraryMusic } from "react-icons/md";
-import { useAuth } from "./context/auth";
-import pb from "./lib/pocketbase";
+import { useAuth } from "../context/auth";
+import pb from "../lib/pocketbase";
 import {
   Root,
   Navbar,
@@ -30,7 +30,7 @@ import {
   CardSub,
   EmptyState,
   TypingGlobalStyle,
-} from "./page.styles";
+} from "../page.styles";
 
 interface ChartRecord {
   id: string;
