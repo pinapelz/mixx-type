@@ -52,6 +52,7 @@ interface PlayingViewProps {
   lineRemainingMs: number;
   currentLineTime: number;
   intermissionData: { pct: number; remainingMs: number };
+  endingIntermissionData: { canSkip: boolean; remainingMs: number };
   wrongChar: boolean;
   clearShowing: boolean;
   comboAnimKey: number;
@@ -75,6 +76,7 @@ export default function PlayingView({
   lineRemainingMs,
   currentLineTime,
   intermissionData,
+  endingIntermissionData,
   wrongChar,
   clearShowing,
   comboAnimKey,
@@ -179,6 +181,11 @@ export default function PlayingView({
                   </LineTimingMeta>
                 )}
               </LineTimingRow>
+              {endingIntermissionData.canSkip && (
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginTop: 8, textAlign: "center" }}>
+                  Press Space to skip long intermissions
+                </div>
+              )}
               <LineTimingBar>
                 <LineTimingFill $pct={lineTimingPct} />
               </LineTimingBar>

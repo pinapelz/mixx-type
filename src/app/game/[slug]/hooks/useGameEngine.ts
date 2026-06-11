@@ -84,6 +84,7 @@ export interface GameEngineResult {
   skipBacking: boolean;
   isVideo: boolean;
   intermissionData: { pct: number; remainingMs: number };
+  endingIntermissionData: { canSkip: boolean; remainingMs: number };
 
   // handlers
   handleStart: () => void;
@@ -290,6 +291,22 @@ export function useGameEngine(): GameEngineResult {
     const pct = Math.min(100, Math.max(0, (mediaCurrentMs / firstMediaMs) * 100));
     return { pct, remainingMs };
   }, [gameLines, currentMs, offset]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const endingIntermissionData = useMemo(() => {
+    const lastIdx = gameLines.length - 1;
+    if (lastIdx < 0 || phase !== "playing") return { canSkip: false, remainingMs: 0 };
+
+    const isAtOrPastLastLine = g.displayedLineIdx >= lastIdx;
+    if (!isAtOrPastLastLine) return { canSkip: false, remainingMs: 0 };
+
+    const lastLine = gameLines[lastIdx];
+    const inEndingIntermission = g.lineCompleted || (lastLine?.content.trim() ?? "") === "";
+    if (!inEndingIntermission) return { canSkip: false, remainingMs: 0 };
+
+    const mediaCurrentMs = Math.max(0, currentMs - offset);
+    const remainingMs = Math.max(0, duration - mediaCurrentMs);
+    return { canSkip: remainingMs > 5000, remainingMs };
+  }, [gameLines, phase, g.displayedLineIdx, g.lineCompleted, currentMs, duration, offset]);
 
   useEffect(() => {
     const idx = g.displayedLineIdx;
@@ -506,16 +523,31 @@ export function useGameEngine(): GameEngineResult {
     const handler = (e: KeyboardEvent) => {
       if (e.key === " ") {
         const idx = gRef.current.displayedLineIdx;
-        if (idx < 0 && gameLines.length > 0) {
+        const media = isVideo ? videoRef.current : audioRef.current;
+
+        if (idx < 0 && gameLines.length > 0 && media) {
           const firstMs = gameLines[0]?.millisecond ?? 0;
-          const media = isVideo ? videoRef.current : audioRef.current;
-          if (media) {
-            const currentMsLocal = media.currentTime * 1000 + offsetRef.current;
-            const intermissionRemaining = Math.max(0, firstMs - currentMsLocal);
-            if (intermissionRemaining > 5000) {
+          const currentMsLocal = media.currentTime * 1000 + offsetRef.current;
+          const intermissionRemaining = Math.max(0, firstMs - currentMsLocal);
+          if (intermissionRemaining > 5000) {
+            e.preventDefault();
+            const targetMs = firstMs - 3000;
+            media.currentTime = Math.max(0, (targetMs - offsetRef.current) / 1000);
+            setCurrentMs(media.currentTime * 1000 + offsetRef.current);
+            return;
+          }
+        }
+
+        if (idx >= gameLines.length - 1 && gameLines.length > 0 && media) {
+          const currentLine = gameLines[idx];
+          const canSkipEndingIntermission =
+            gRef.current.lineCompleted || (currentLine?.content.trim() ?? "") === "";
+
+          if (canSkipEndingIntermission && Number.isFinite(media.duration) && media.duration > 0) {
+            const remainingToEndMs = Math.max(0, media.duration * 1000 - media.currentTime * 1000);
+            if (remainingToEndMs > 5000) {
               e.preventDefault();
-              const targetMs = firstMs - 3000;
-              media.currentTime = Math.max(0, (targetMs - offsetRef.current) / 1000);
+              media.currentTime = Math.max(0, media.duration - 0.05);
               setCurrentMs(media.currentTime * 1000 + offsetRef.current);
               return;
             }
@@ -581,6 +613,7 @@ export function useGameEngine(): GameEngineResult {
     skipBacking,
     isVideo,
     intermissionData,
+    endingIntermissionData,
 
     // handlers
     handleStart,

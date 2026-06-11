@@ -24,7 +24,7 @@ function GameInner() {
     g, gameLines, accuracy, wpm,
     // timing
     currentMs, duration, progressPct, lineTimingPct, lineRemainingMs,
-    currentLineTime, intermissionData,
+    currentLineTime, intermissionData, endingIntermissionData,
     // display
     wrongChar, clearShowing, comboAnimKey, wrapSpaceIndicators,
     // settings
@@ -103,6 +103,7 @@ function GameInner() {
             lineRemainingMs={lineRemainingMs}
             currentLineTime={currentLineTime}
             intermissionData={intermissionData}
+            endingIntermissionData={endingIntermissionData}
             wrongChar={wrongChar}
             clearShowing={clearShowing}
             comboAnimKey={comboAnimKey}
