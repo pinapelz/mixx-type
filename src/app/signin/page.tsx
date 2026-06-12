@@ -230,7 +230,7 @@ export default function SignInPage() {
                 <Input
                   id="auth-username"
                   type="text"
-                  placeholder="your username"
+                  placeholder="Your Username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required

@@ -45,7 +45,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = useCallback(
     async (email: string, username: string, password: string, passwordConfirm: string) => {
-      await pb.collection("users").create({ email, username, password, passwordConfirm });
+      const normalizedUsername = username.trim();
+      await pb.collection("users").create({
+        email,
+        username: normalizedUsername,
+        name: normalizedUsername,
+        password,
+        passwordConfirm,
+      });
       await pb.collection("users").authWithPassword(email, password);
       setUser(pb.authStore.record ?? null);
     },
