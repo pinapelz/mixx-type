@@ -34,6 +34,7 @@ interface PreGameViewProps {
   loadingLrc: boolean;
   songTitle: string;
   songArtist: string;
+  chartImage: string | undefined,
   chartId: string | null;
   audioUrl: string;
   isVideo: boolean;
@@ -87,6 +88,7 @@ export default function PreGameView({
   loadingLrc,
   songTitle,
   songArtist,
+  chartImage,
   chartId,
   audioUrl,
   isVideo,
@@ -172,6 +174,7 @@ export default function PreGameView({
               <>
                 <SongTitleText>{loadingLrc ? "Loading..." : songTitle}</SongTitleText>
                 <SongArtistText>{songArtist}</SongArtistText>
+                {chartImage ? <img src={chartImage} alt={`${songTitle} cover`} /> : null}
               </>
             )}
 

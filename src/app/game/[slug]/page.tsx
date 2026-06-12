@@ -17,7 +17,7 @@ function GameInner() {
     // refs
     audioRef, videoRef, charRowRef, charRefs,
     // song
-    audioUrl, songTitle, songArtist, chartId, isVideo, isReady, loadingLrc,
+    audioUrl, songTitle, songArtist, chartImage, chartId, isVideo, isReady, loadingLrc,
     // phase
     phase, countdown,
     // game state
@@ -76,6 +76,7 @@ function GameInner() {
             loadingLrc={loadingLrc}
             songTitle={songTitle}
             songArtist={songArtist}
+            chartImage={chartImage}
             chartId={chartId}
             audioUrl={audioUrl}
             isVideo={isVideo}

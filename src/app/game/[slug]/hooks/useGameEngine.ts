@@ -57,6 +57,7 @@ export interface GameEngineResult {
   audioUrl: string;
   songTitle: string;
   songArtist: string;
+  chartImage: string | undefined;
   chartId: string | null;
   offset: number;
   loadingLrc: boolean;
@@ -128,6 +129,7 @@ export function useGameEngine(): GameEngineResult {
   const [audioUrl, setAudioUrl] = useState("");
   const [songTitle, setSongTitle] = useState("Unknown Title");
   const [songArtist, setSongArtist] = useState("Unknown Artist");
+  const [chartImage, setChartImage] = useState<string | undefined>(undefined);
   const [chartId, setChartId] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
   const [loadingLrc, setLoadingLrc] = useState(false);
@@ -404,6 +406,8 @@ export function useGameEngine(): GameEngineResult {
     if (typeof data.offset === "number") setOffset(data.offset);
     if (typeof data.offset === "string" && data.offset.trim() !== "") setOffset(Number(data.offset));
     if (typeof data.title === "string") setSongTitle(data.title);
+    if (typeof data.thumbnail === "string") setChartImage(data.thumbnail);
+    if (typeof data.chartImage === "string") setChartImage(data.chartImage);
     if (typeof data.artist === "string") setSongArtist(data.artist);
     if (typeof data.skip_backing === "boolean") setSkipBacking(data.skip_backing);
     if (typeof data.skip_backing === "string") setSkipBacking(data.skip_backing === "true");
@@ -420,7 +424,9 @@ export function useGameEngine(): GameEngineResult {
           lrc: (record as Record<string, unknown>).lrc,
           offset: (record as Record<string, unknown>).offset,
           title: (record as Record<string, unknown>).title,
+          thumbnail: (record as Record<string, unknown>).thumbnail,
           artist: (record as Record<string, unknown>).artist,
+          skip_backing: (record as Record<string, unknown>).skip_backing,
         });
       })
       .catch(() => {
@@ -590,6 +596,7 @@ export function useGameEngine(): GameEngineResult {
     audioUrl,
     songTitle,
     songArtist,
+    chartImage,
     chartId,
     offset,
     loadingLrc,
