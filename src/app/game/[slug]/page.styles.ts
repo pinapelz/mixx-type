@@ -462,8 +462,8 @@ export const LeaderboardList = styled.div`
 
 export const LeaderboardRow = styled.div`
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) auto;
-  align-items: center;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: start;
   gap: 10px;
   padding: 8px 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -474,6 +474,21 @@ export const LeaderboardRank = styled.span`
   color: rgba(255, 255, 255, 0.6);
   font-variant-numeric: tabular-nums;
   font-size: 13px;
+  padding-top: 2px;
+`;
+
+export const LeaderboardEntryBody = styled.div`
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+export const LeaderboardEntryTop = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 `;
 
 export const LeaderboardName = styled.span`
@@ -488,6 +503,19 @@ export const LeaderboardScore = styled.span`
   color: #ffffff;
   font-weight: 700;
   font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+`;
+
+export const LeaderboardMetrics = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px 8px;
+`;
+
+export const LeaderboardMetric = styled.span`
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
 `;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import {
@@ -15,7 +15,9 @@ import {
   ActionRow,
   PlayAgainBtn,
   HomeBtn,
+  PreviewHint,
 } from "../page.styles";
+import ScoreLeaderboard from "./ScoreLeaderboard";
 import { GState } from "../game.stat";
 import { useAuth } from "../../../context/auth";
 import pb from "../../../lib/pocketbase";
@@ -40,6 +42,8 @@ export default function ResultsView({
   const router = useRouter();
   const { user, loading } = useAuth();
   const hasTriedAutoUploadRef = useRef(false);
+  const [isUploadingScore, setIsUploadingScore] = useState(false);
+  const [isUploadFlowComplete, setIsUploadFlowComplete] = useState(false);
 
   useEffect(() => {
     if (hasTriedAutoUploadRef.current) return;
@@ -47,13 +51,20 @@ export default function ResultsView({
 
     hasTriedAutoUploadRef.current = true;
 
-    if (!user || !chartId) return;
+    if (!user || !chartId) {
+      setIsUploadFlowComplete(true);
+      return;
+    }
 
     const dedupeKey = `scores:auto:${chartId}:${user.id}:${g.score}:${wpm}:${g.maxCombo}:${g.totalMiss}:${accuracy}`;
 
-    if (sessionStorage.getItem(dedupeKey) === "1") return;
+    if (sessionStorage.getItem(dedupeKey) === "1") {
+      setIsUploadFlowComplete(true);
+      return;
+    }
 
     const uploadScore = async () => {
+      setIsUploadingScore(true);
       try {
         try {
           await pb.collection("scores").create({
@@ -81,6 +92,9 @@ export default function ResultsView({
         toast.success("Score uploaded.", { theme: "dark" });
       } catch {
         toast.error("Failed to upload score. Please try again.", { theme: "dark" });
+      } finally {
+        setIsUploadingScore(false);
+        setIsUploadFlowComplete(true);
       }
     };
 
@@ -110,6 +124,11 @@ export default function ResultsView({
             <StatLabel>Missed Chars</StatLabel>
           </StatBlock>
         </StatsGrid>
+        {isUploadingScore ? (
+          <PreviewHint>Uploading score...</PreviewHint>
+        ) : isUploadFlowComplete ? (
+          <ScoreLeaderboard chartId={chartId} />
+        ) : null}
         <ActionRow>
           <PlayAgainBtn onClick={onPlayAgain}>Play Again</PlayAgainBtn>
           <HomeBtn onClick={() => router.push("/")}>Home</HomeBtn>
