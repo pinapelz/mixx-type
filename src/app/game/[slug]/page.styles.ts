@@ -395,6 +395,102 @@ export const StartCard = styled.div`
   text-align: center;
 `;
 
+export const PreGameCard = styled(StartCard)`
+  max-width: 980px;
+  align-items: stretch;
+  text-align: left;
+  gap: 24px;
+`;
+
+export const PreGameGrid = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 920px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const PreGameLeft = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+export const PreGameRight = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+export const LeaderboardCard = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+`;
+
+export const LeaderboardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const LeaderboardTitle = styled.div`
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+`;
+
+export const LeaderboardCount = styled.span`
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  font-variant-numeric: tabular-nums;
+`;
+
+export const LeaderboardList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+export const LeaderboardRow = styled.div`
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+`;
+
+export const LeaderboardRank = styled.span`
+  color: rgba(255, 255, 255, 0.6);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+`;
+
+export const LeaderboardName = styled.span`
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 13px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
+export const LeaderboardScore = styled.span`
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+`;
+
 export const OpacityControl = styled.div`
   width: 100%;
   display: flex;

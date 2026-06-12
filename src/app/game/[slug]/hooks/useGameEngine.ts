@@ -57,6 +57,7 @@ export interface GameEngineResult {
   audioUrl: string;
   songTitle: string;
   songArtist: string;
+  chartId: string | null;
   offset: number;
   loadingLrc: boolean;
 
@@ -127,6 +128,7 @@ export function useGameEngine(): GameEngineResult {
   const [audioUrl, setAudioUrl] = useState("");
   const [songTitle, setSongTitle] = useState("Unknown Title");
   const [songArtist, setSongArtist] = useState("Unknown Artist");
+  const [chartId, setChartId] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
   const [loadingLrc, setLoadingLrc] = useState(false);
 
@@ -412,6 +414,7 @@ export function useGameEngine(): GameEngineResult {
     pb.collection("charts")
       .getOne(slug)
       .then((record) => {
+        setChartId(record.id);
         loadData({
           media: (record as Record<string, unknown>).media,
           lrc: (record as Record<string, unknown>).lrc,
@@ -421,6 +424,7 @@ export function useGameEngine(): GameEngineResult {
         });
       })
       .catch(() => {
+        setChartId(null);
         try {
           const json = atob(slug);
           const data = JSON.parse(json) as Record<string, unknown>;
@@ -586,6 +590,7 @@ export function useGameEngine(): GameEngineResult {
     audioUrl,
     songTitle,
     songArtist,
+    chartId,
     offset,
     loadingLrc,
 
