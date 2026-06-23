@@ -167,7 +167,7 @@ export function Sidebar() {
       <Footer>
         {user ? (
           <>
-            <Username $collapsed={collapsed}>{user.username || user.name}</Username>
+            <Username $collapsed={collapsed}>{user.name}</Username>
             <AuthButton $collapsed={collapsed} onClick={signOut}>
               <LogOut size={16} />
               <Label $collapsed={collapsed}>Sign out</Label>

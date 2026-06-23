@@ -9,7 +9,6 @@ import {
   NavCtaLink as BaseNavCtaLink,
 } from "./styles/shared";
 
-// ── Base components (previously in the old app/page.styles.ts) ───────────────
 
 const BaseNavLeft = styled.div`
   display: flex;
@@ -206,6 +205,12 @@ const BaseCardSub = styled.span`
   line-height: 1.3;
 `;
 
+const BaseCardTag = styled.span`
+  font-size: 10px;
+  color: #909090;
+  line-height: 1.3;
+`;
+
 const BaseEmptyState = styled.div`
   grid-column: 1 / -1;
   padding: 48px 0;
@@ -214,7 +219,6 @@ const BaseEmptyState = styled.div`
   color: #909090;
 `;
 
-// ── Dark-themed exports ───────────────────────────────────────────────────────
 
 export { GridContainer as BaseGridContainer };
 
@@ -325,6 +329,13 @@ export const CardTitle = styled(BaseCardTitle)`
 
 export const CardSub = styled(BaseCardSub)`
   color: #9aa0ad;
+`;
+
+export const CardTag = styled(BaseCardTag)`
+  display: inline-block;
+  color: #b8bcc7;
+  font-size: 10px;
+  white-space: nowrap;
 `;
 
 export const EmptyState = styled(BaseEmptyState)`

@@ -28,6 +28,7 @@ import {
   CardInfo,
   CardTitle,
   CardSub,
+  CardTag,
   EmptyState,
   TypingGlobalStyle,
 } from "../page.styles";
@@ -40,11 +41,12 @@ interface ChartRecord {
   lrc: string;
   media: string;
   offset: number;
+  category: string;
 }
 
 
 export default function TypingPage() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [charts, setCharts] = useState<ChartRecord[]>([]);
   const [search, setSearch] = useState("");
 
@@ -59,8 +61,9 @@ export default function TypingPage() {
   const filtered = normalizedSearch
     ? charts.filter(
         (item) =>
-          item.title.toLowerCase().includes(normalizedSearch) ||
-          item.artist.toLowerCase().includes(normalizedSearch),
+          item.title.includes(normalizedSearch) ||
+          item.artist.includes(normalizedSearch) ||
+          item.category.includes(normalizedSearch)
       )
     : charts;
 
@@ -91,16 +94,9 @@ export default function TypingPage() {
           </SearchBox>
         </NavCenter>
 
-        <NavRight>
+        <NavRight>f
           {user ? (
-            <>
-              <span style={{ fontSize: 13, color: "#b0b3bd", padding: "0 6px", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {user.username || user.name}
-              </span>
-              <NavCtaLink href="#" onClick={(e) => { e.preventDefault(); signOut(); }}>
-                Sign out
-              </NavCtaLink>
-            </>
+            null
           ) : (
             <NavCtaLink href="/signin">Sign in</NavCtaLink>
           )}
@@ -130,6 +126,7 @@ export default function TypingPage() {
                   <CardInfo>
                     <CardTitle>{item.title}</CardTitle>
                     <CardSub>{item.artist}</CardSub>
+                    <CardTag>{item.category}</CardTag>
                   </CardInfo>
                 </CardMeta>
               </Card>

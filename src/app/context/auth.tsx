@@ -48,7 +48,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const normalizedUsername = username.trim();
       await pb.collection("users").create({
         email,
-        username: normalizedUsername,
         name: normalizedUsername,
         password,
         passwordConfirm,
